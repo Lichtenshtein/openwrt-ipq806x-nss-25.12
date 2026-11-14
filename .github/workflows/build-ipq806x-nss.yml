@@ -129,6 +129,18 @@ jobs:
           path: dl
           key: dl-${{ matrix.device }}-${{ hashFiles('feeds.conf.default', matrix.seed) }}
 
+      # On a cancelled run make/ccache are still writing to .ccache when the save
+      # step starts, so tar fails with "file changed as we read it" and the cache
+      # is lost. Stop make and wait (up to 60 s) for running ccache jobs to finish.
+      - name: Stop leftover build processes
+        if: always()
+        run: |
+          pkill -TERM -x make || true
+          for i in $(seq 1 30); do
+            pgrep -x ccache >/dev/null || break
+            sleep 2
+          done
+
       - name: Save compiler cache (ccache)
         if: always()
         uses: actions/cache/save@v5
