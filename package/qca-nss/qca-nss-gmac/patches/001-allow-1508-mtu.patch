@@ -1,0 +1,13 @@
+--- a/ipq806x/nss_gmac_ctrl.c
++++ b/ipq806x/nss_gmac_ctrl.c
+@@ -1211,7 +1211,10 @@
+ 	netdev = alloc_etherdev(sizeof(struct nss_gmac_dev));
+ 	if (!netdev) {
+ 		pr_info("%s: alloc_etherdev() failed\n", __func__);
+ 		return -ENOMEM;
+ 	}
+ 
++	/* RFC 4638: allow baby jumbo frames for a full 1500 byte PPPoE MTU */
++	netdev->max_mtu = ETH_DATA_LEN + 8;
++
+ 	gmacdev = netdev_priv(netdev);
