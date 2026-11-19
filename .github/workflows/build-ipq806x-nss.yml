@@ -16,6 +16,10 @@ on:
         description: 'Launch tmate (SSH) for make menuconfig'
         type: boolean
         default: false
+      freeSpace:
+        description: 'Free some Disk Space before Build'
+        type: boolean
+        default: false
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -39,12 +43,93 @@ jobs:
             experimental: false
 
     steps:
-      - name: Free disk space
+      - name: Check Initial Disk Space
+        id: space_check
         run: |
-          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc \
-            /opt/hostedtoolcache/CodeQL /usr/local/share/boost
-          sudo docker image prune --all --force >/dev/null || true
+          echo "=== Initial Disk Space ==="
           df -h /
+
+          # Get the available space in megabytes
+          AVAILABLE_SPACE=$(df -m / | awk 'NR==2 {print $4}')
+          echo "available_space_mb=$AVAILABLE_SPACE" >> $GITHUB_OUTPUT
+
+          # If the space is less than 35840 MB (35 GB), raise the panic flag
+          if [ "$AVAILABLE_SPACE" -lt 35840 ]; then
+            echo "🚨 Low disk space detected! Forcing auto-clean."
+            echo "trigger_clean=true" >> $GITHUB_OUTPUT
+          else
+            echo "✅ Disk space is sufficient."
+            echo "trigger_clean=false" >> $GITHUB_OUTPUT
+          fi
+
+      ## This cleans ~24Gb
+      - name: Free Disk Space (Ubuntu)
+        if: ${{ github.event.inputs.freeSpace == 'true' || steps.space_check.outputs.trigger_clean == 'true' }}
+        uses: aausch/free-disk-space@fix/input-injection-and-mode-guard
+        with:
+          tool-cache: false
+          mandb:   true
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true # clang or llvm-ar on host
+          docker-images: false
+          swap-storage: false
+          codeql-images: true # GitHub vulnerability scanner CodeQ
+
+      # This cleans ~400Mb
+      - name: Final Deep Clean and Space Check
+        if: ${{ github.event.inputs.freeSpace == 'true' || steps.space_check.outputs.trigger_clean == 'true' }}
+        run: |
+          sudo ionice -c 3 rm -rf /usr/share/dotnet &
+          sudo ionice -c 3 rm -rf /usr/local/lib/android &
+          sudo ionice -c 3 rm -rf /opt/ghc &
+          sudo ionice -c 3 rm -rf "/usr/local/share/boost" &
+          sudo ionice -c 3 rm -rf "$AGENT_TOOLSDIRECTORY" &
+          docker image prune -af &
+          wait
+          echo "--- FINAL DISK SPACE REPORT ---"
+          df -h /
+          echo "-------------------------------"
+
+      - name: Setup Swap Space
+        run: |
+          CURRENT_SPACE=$(df -m / | awk 'NR==2 {print $4}')
+          echo "Current space after potential clean: $CURRENT_SPACE MB"
+
+          # If space is critically low (less than 30 GB / 30720 MB)
+          if [ "$CURRENT_SPACE" -lt 30720 ]; then
+            echo "⚠️ Post-clean disk space is critically tight ($CURRENT_SPACE MB)."
+            sudo swapoff -a || true
+            sudo rm -f /swapfile
+            echo "=== Allocating safe 6GB Swap File to preserve disk cache ==="
+            sudo fallocate -l 6G /swapfile || sudo dd if=/dev/zero of=/swapfile bs=1M count=6096
+
+          # If space is moderately low (less than 55 GB / 56320 MB)
+          elif [ "$CURRENT_SPACE" -lt 56320 ]; then
+            echo "ℹ️ Moderate disk space available ($CURRENT_SPACE MB). 32GB Swap is dangerous."
+            sudo swapoff -a || true
+            sudo rm -f /swapfile
+            echo "=== Allocating balanced 12GB Swap File ==="
+            sudo fallocate -l 12G /swapfile || sudo dd if=/dev/zero of=/swapfile bs=1M count=12288
+
+          # If there is really a lot of space (more than 55 GB)
+          else
+            echo "✅ Abundant disk space available ($CURRENT_SPACE MB). Safe for maximum swap."
+            sudo swapoff -a || true
+            sudo rm -f /swapfile
+            echo "=== Allocating maximum 32GB Swap File ==="
+            sudo fallocate -l 32G /swapfile || sudo dd if=/dev/zero of=/swapfile bs=1M count=32768
+          fi
+
+          sudo chmod 600 /swapfile
+          sudo mkswap /swapfile
+          sudo swapon /swapfile
+          swapon --show
+
+          echo "=== Remaining Disk Space after Swap Allocation ==="
+          df -h /
+
 
       - name: Install build dependencies
         run: |
