@@ -9,6 +9,9 @@ src-git video https://github.com/openwrt/video.git
 
 # additional feeds:
 src-git xwrt https://github.com/x-wrt/com.x-wrt.git
-src-git fantastic_packages https://github.com/fantastic-packages/packages.git;master
 src-git passwall_packages https://github.com/Openwrt-Passwall/openwrt-passwall-packages.git;main
 src-git passwall_luci https://github.com/Openwrt-Passwall/openwrt-passwall.git;main
+
+src-link fantastic_packages_packages fantastic_packages/feeds/packages
+src-link fantastic_packages_luci fantastic_packages/feeds/luci
+src-link fantastic_packages_special fantastic_packages/feeds/special

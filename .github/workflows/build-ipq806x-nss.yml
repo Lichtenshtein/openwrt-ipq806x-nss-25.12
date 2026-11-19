@@ -165,6 +165,7 @@ jobs:
 
       - name: Update feeds
         run: |
+          git clone --depth 1 --branch master --no-tags --recurse-submodules https://github.com/fantastic-packages/packages.git fantastic_packages
           ./scripts/feeds update -a
           ./scripts/feeds install -a
           unzip -o VHTNSS.zip
