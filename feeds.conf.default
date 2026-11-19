@@ -11,6 +11,7 @@ src-git video https://github.com/openwrt/video.git
 src-git xwrt https://github.com/x-wrt/com.x-wrt.git
 src-git passwall_packages https://github.com/Openwrt-Passwall/openwrt-passwall-packages.git;main
 src-git passwall_luci https://github.com/Openwrt-Passwall/openwrt-passwall.git;main
+src-git jerryk https://github.com/jerrykuku/openwrt-package.git
 
 src-link fantastic_packages_packages fantastic_packages/feeds/packages
 src-link fantastic_packages_luci fantastic_packages/feeds/luci

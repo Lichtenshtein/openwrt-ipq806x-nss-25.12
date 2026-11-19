@@ -186,9 +186,14 @@ jobs:
           echo 'CONFIG_CCACHE=y' >> .config
           make defconfig
 
-      - name: Setup tmate session
+      # - name: Setup tmate session
+        # if: ${{ github.event.inputs.ssh == 'true' }}
+        # uses: mxschmitt/action-tmate@v3
+        # timeout-minutes: 30
+
+      - name: Setup upterm session
         if: ${{ github.event.inputs.ssh == 'true' }}
-        uses: mxschmitt/action-tmate@v3
+        uses: owenthereal/action-upterm@v1
         timeout-minutes: 30
 
       # Warn about seed lines that "make defconfig" silently dropped (renamed or
