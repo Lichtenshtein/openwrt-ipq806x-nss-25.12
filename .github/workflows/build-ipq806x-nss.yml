@@ -102,24 +102,24 @@ jobs:
             echo "⚠️ Post-clean disk space is critically tight ($CURRENT_SPACE MB)."
             sudo swapoff -a || true
             sudo rm -f /swapfile
-            echo "=== Allocating safe 6GB Swap File to preserve disk cache ==="
-            sudo fallocate -l 6G /swapfile || sudo dd if=/dev/zero of=/swapfile bs=1M count=6096
+            echo "=== Allocating safe 2GB Swap File to preserve disk cache ==="
+            sudo fallocate -l 2G /swapfile || sudo dd if=/dev/zero of=/swapfile bs=1M count=2048
 
           # If space is moderately low (less than 55 GB / 56320 MB)
           elif [ "$CURRENT_SPACE" -lt 56320 ]; then
             echo "ℹ️ Moderate disk space available ($CURRENT_SPACE MB). 32GB Swap is dangerous."
             sudo swapoff -a || true
             sudo rm -f /swapfile
-            echo "=== Allocating balanced 12GB Swap File ==="
-            sudo fallocate -l 12G /swapfile || sudo dd if=/dev/zero of=/swapfile bs=1M count=12288
+            echo "=== Allocating balanced 6GB Swap File ==="
+            sudo fallocate -l 6G /swapfile || sudo dd if=/dev/zero of=/swapfile bs=1M count=6144
 
           # If there is really a lot of space (more than 55 GB)
           else
             echo "✅ Abundant disk space available ($CURRENT_SPACE MB). Safe for maximum swap."
             sudo swapoff -a || true
             sudo rm -f /swapfile
-            echo "=== Allocating maximum 32GB Swap File ==="
-            sudo fallocate -l 32G /swapfile || sudo dd if=/dev/zero of=/swapfile bs=1M count=32768
+            echo "=== Allocating maximum 16GB Swap File ==="
+            sudo fallocate -l 16G /swapfile || sudo dd if=/dev/zero of=/swapfile bs=1M count=16384
           fi
 
           sudo chmod 600 /swapfile
@@ -168,6 +168,15 @@ jobs:
           ./scripts/feeds update -a
           ./scripts/feeds install -a
           unzip -o VHTNSS.zip
+
+          # Selectively pull only the necessary packages from ImmortalWrt
+          # For multiple packages, separate by spaces: `git sparse-checkout set net/hysteria net/another_package`
+          # git clone --depth 1 --filter=blob:none --sparse https://github.com/immortalwrt/packages.git /tmp/immortal
+          # cd /tmp/immortal
+          # git sparse-checkout set net/hysteria
+          # cp -r net/hysteria $GITHUB_WORKSPACE/package/
+          # cd $GITHUB_WORKSPACE
+          # rm -rf /tmp/immortal
 
       - name: Configure
         run: |
