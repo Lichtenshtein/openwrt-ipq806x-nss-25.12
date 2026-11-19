@@ -28,9 +28,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - device: netgear_r7800
+          - device: askey_rt4230w-rev6
             variant: std
-            seed: diff            # name of the seed file in the repo root
+            seed: diff-rac2v1k
             experimental: false
 
     steps:
