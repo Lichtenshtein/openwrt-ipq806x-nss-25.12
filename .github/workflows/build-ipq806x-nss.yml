@@ -1,15 +1,15 @@
 name: Build ipq806x NSS images
 
 on:
-  push:
-    branches:
-      - 'ipq806x-nss-*'
-      - 'dsa-main'
-    tags:
-      - 'v*'
-    paths-ignore:
-      - 'README.md'
-      - 'README.openwrt.md'
+  # push:
+    # branches:
+      # - 'ipq806x-nss-*'
+      # - 'dsa-main'
+    # tags:
+      # - 'v*'
+    # paths-ignore:
+      # - 'README.md'
+      # - 'README.openwrt.md'
   workflow_dispatch:
     inputs:
       ssh:
