@@ -15,12 +15,13 @@ CONFIG_RUST_TOOLCHAINOPTS=y
 CONFIG_TOOLCHAINOPTS=y
 CONFIG_GCC_USE_VERSION_15=y
 CONFIG_TARGET_OPTIONS=y
-CONFIG_TARGET_OPTIMIZATION="-O3 -pipe"
+CONFIG_TARGET_OPTIMIZATION="-O3 -pipe -mcpu=cortex-a15 -mfpu=neon-vfpv4 -mfloat-abi=hard"
 CONFIG_EXTRA_OPTIMIZATION="-fno-caller-saves -fno-plt -fno-unwind-tables -fno-asynchronous-unwind-tables"
 CONFIG_USE_GC_SECTIONS=y
 CONFIG_USE_LTO=y
 CONFIG_USE_MOLD=y
 CONFIG_GCC_USE_GRAPHITE=y
+CONFIG_TARGET_INIT_PATH="/usr/sbin:/usr/bin:/sbin:/bin:/opt/usr/bin:/opt/bin:/opt/sbin:/opt/usr/sbin"
 
 ## Use ath10k instead ath10k-ct
 CONFIG_PACKAGE_ath10k-firmware-qca9984=y
@@ -42,7 +43,7 @@ CONFIG_OPENSSL_PREFER_CHACHA_OVER_GCM=y
 CONFIG_OPENSSL_WITH_ASM=y
 CONFIG_OPENSSL_WITH_CHACHA_POLY1305=y
 
-#CONFIG_FEED_sqm_scripts_nss=n  
+#CONFIG_FEED_sqm_scripts_nss=n
 #CONFIG_FEED_sqm_autorate_nss=n
 
 # NSS Drivers

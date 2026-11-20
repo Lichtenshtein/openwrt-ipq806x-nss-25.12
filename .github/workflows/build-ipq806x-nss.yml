@@ -181,6 +181,7 @@ jobs:
 
       - name: Configure
         run: |
+          chmod +x files/etc/rc.local
           cp ${{ matrix.seed }} .config
           # ccache is enabled for CI only, so local builds of the seed are unaffected
           echo 'CONFIG_CCACHE=y' >> .config
