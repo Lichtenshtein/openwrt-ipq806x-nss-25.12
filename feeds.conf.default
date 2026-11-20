@@ -11,6 +11,7 @@ src-git video https://github.com/openwrt/video.git
 
 src-git packages https://github.com/immortalwrt/packages.git;master
 src-git luci https://github.com/immortalwrt/luci.git;master
+src-git wwan https://github.com/immortalwrt/wwan-packages.git;master
 src-git xwrt https://github.com/x-wrt/com.x-wrt.git
 src-git passwall_packages https://github.com/Openwrt-Passwall/openwrt-passwall-packages.git;main
 src-git passwall_luci https://github.com/Openwrt-Passwall/openwrt-passwall.git;main
