@@ -1,0 +1,30 @@
+#!/bin/sh
+
+# Даем системе завершить загрузку драйверов
+sleep 5
+
+# Оптимизация CPU governor для максимальной скорости NSS и Wi-Fi
+for policy in /sys/devices/system/cpu/cpufreq/policy0 /sys/devices/system/cpu/cpufreq/policy1; do
+    if [ -d "$policy" ]; then
+        echo ondemand > "$policy/scaling_governor"
+        echo 1000000 > "$policy/scaling_min_freq"
+        echo 1725000 > "$policy/scaling_max_freq"
+    fi
+done
+
+if [ -d /sys/devices/system/cpu/cpufreq/ondemand ]; then
+    echo 40 > /sys/devices/system/cpu/cpufreq/ondemand/up_threshold
+    echo 100 > /sys/devices/system/cpu/cpufreq/ondemand/sampling_down_factor
+    echo 40000 > /sys/devices/system/cpu/cpufreq/ondemand/sampling_rate
+fi
+
+# Снижение задержек Wi-Fi (AQL)
+for phy in phy0 phy1; do
+    if [ -f "/sys/kernel/debug/ieee80211/$phy/aql_txq_limit" ]; then
+        for ac in 0 1 2 3; do
+            echo "$ac 1500 1500" > "/sys/kernel/debug/ieee80211/$phy/aql_txq_limit"
+        done
+    fi
+done
+
+exit 0
