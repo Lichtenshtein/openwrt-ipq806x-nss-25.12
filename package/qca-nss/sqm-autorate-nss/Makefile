@@ -1,6 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=sqm-autorate-nss
+
 PKG_VERSION:=20261120
 PKG_RELEASE:=1
 
