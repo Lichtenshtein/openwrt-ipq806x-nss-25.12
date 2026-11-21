@@ -20,6 +20,10 @@ on:
         description: 'Free some Disk Space before Build'
         type: boolean
         default: false
+      uploadPackages:
+        description: 'Upload module packages (.ipk/.apk) as artifact'
+        type: boolean
+        default: false
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -277,6 +281,23 @@ jobs:
         with:
           name: openwrt-nss-${{ matrix.device }}-${{ matrix.variant }}
           path: out/
+          retention-days: 30
+
+      - name: Collect module packages
+        if: ${{ github.event.inputs.uploadPackages == 'true' }}
+        run: |
+          mkdir -p out-packages/target-kmods out-packages/feeds-packages
+          cp -r bin/targets/ipq806x/generic/packages/* out-packages/target-kmods/ 2>/dev/null || true
+          cp -r bin/packages/* out-packages/feeds-packages/ 2>/dev/null || true
+          tar -czf packages-${{ matrix.device }}-${{ matrix.variant }}.tar.gz -C out-packages .
+          ls -lh packages-${{ matrix.device }}-${{ matrix.variant }}.tar.gz
+
+      - name: Upload module packages
+        if: ${{ github.event.inputs.uploadPackages == 'true' }}
+        uses: actions/upload-artifact@v6
+        with:
+          name: openwrt-nss-packages-${{ matrix.device }}-${{ matrix.variant }}
+          path: packages-${{ matrix.device }}-${{ matrix.variant }}.tar.gz
           retention-days: 30
 
   release:
