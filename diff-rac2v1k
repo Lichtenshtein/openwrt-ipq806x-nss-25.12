@@ -15,7 +15,7 @@ CONFIG_RUST_TOOLCHAINOPTS=y
 CONFIG_TOOLCHAINOPTS=y
 CONFIG_GCC_USE_VERSION_15=y
 CONFIG_TARGET_OPTIONS=y
-CONFIG_TARGET_OPTIMIZATION="-O3 -pipe -mcpu=cortex-a15 -mfpu=neon-vfpv4 -mfloat-abi=hard"
+CONFIG_TARGET_OPTIMIZATION="-O3 -pipe -mcpu=cortex-a15 -mfpu=neon-vfpv4 -mfloat-abi=hard -ffunction-sections -fdata-sections"
 CONFIG_EXTRA_OPTIMIZATION="-fno-caller-saves -fno-plt -fno-unwind-tables -fno-asynchronous-unwind-tables"
 CONFIG_USE_GC_SECTIONS=y
 CONFIG_USE_LTO=y
@@ -200,7 +200,7 @@ CONFIG_VERSION_DIST="OpenWrt NSS"
 # Additional
 CONFIG_PACKAGE_kmod-nft-queue=y
 CONFIG_PACKAGE_libnetfilter-queue=y
-CONFIG_PACKAGE_luci-theme-material=y
+
 CONFIG_PACKAGE_luci-i18n-base-ru=y
 CONFIG_PACKAGE_luci-i18n-sqm-ru=y
 CONFIG_PACKAGE_luci-i18n-adblock-ru=y
