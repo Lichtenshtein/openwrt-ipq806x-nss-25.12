@@ -197,8 +197,8 @@ jobs:
 
       - name: Setup upterm session
         if: ${{ github.event.inputs.ssh == 'true' }}
-        uses: owenthereal/action-upterm@v1
-        timeout-minutes: 30
+        uses: owenthereal/action-upterm@v2
+        timeout-minutes: 300
 
       # Warn about seed lines that "make defconfig" silently dropped (renamed or
       # removed packages, unmet dependencies). Checked before the long build.
