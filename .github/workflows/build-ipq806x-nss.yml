@@ -43,7 +43,7 @@ jobs:
         include:
           - device: askey_rt4230w-rev6
             variant: std
-            seed: diff-rac2v1k
+            seed: diff-rac2v1k-test
             experimental: false
 
     steps:
