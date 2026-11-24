@@ -185,8 +185,8 @@ jobs:
 
       - name: Configure
         run: |
-          git apply $GITHUB_WORKSPACE/diff-rac2v1k-kernel.patch
-          # patch -p1 --fuzz=3 diff-rac2v1k-kernel.patch
+          # git apply $GITHUB_WORKSPACE/diff-rac2v1k-kernel.patch
+          patch -p1 --fuzz=3 $GITHUB_WORKSPACE/diff-rac2v1k-kernel.patch
           cp ${{ matrix.seed }} .config
           # ccache is enabled for CI only, so local builds of the seed are unaffected
           echo 'CONFIG_CCACHE=y' >> .config
