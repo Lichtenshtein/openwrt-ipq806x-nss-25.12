@@ -220,6 +220,7 @@ jobs:
       # removed packages, unmet dependencies). Checked before the long build.
       - name: Check seed survived defconfig
         run: |
+          # yes "" | make kernel_oldconfig
           grep '^CONFIG_' "${{ matrix.seed }}" | sed 's/[[:space:]]*$//' > seed.lines
           : > dropped.txt
           while IFS= read -r line; do
