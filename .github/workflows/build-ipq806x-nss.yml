@@ -204,7 +204,7 @@ jobs:
           # ccache is enabled for CI only, so local builds of the seed are unaffected
           echo 'CONFIG_CCACHE=y' >> .config
           make defconfig
-          yes "" | make kernel_oldconfig
+          yes "" | make target/linux/prepare
 
       # - name: Setup tmate session
         # if: ${{ github.event.inputs.ssh == 'true' }}
