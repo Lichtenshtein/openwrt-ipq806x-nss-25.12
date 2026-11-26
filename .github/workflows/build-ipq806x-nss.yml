@@ -249,7 +249,11 @@ jobs:
         run: |
           set -o pipefail
           mkdir -p ci-logs
-          make -j8 download 2>&1 | tee ci-logs/download.log
+          if ! make -j8 download 2>&1 | tee ci-logs/download.log; then
+            echo "::warning::parallel download failed, rerunning with -j1 V=s"
+            make -j1 V=s download 2>&1 | tee ci-logs/download-j1.log | tail -n 100
+            exit 1
+          fi
 
       # Both runs are logged to ci-logs/ for the diagnosis step below. The -j1
       # V=s rerun only redoes what failed and shows the real error first; if it
