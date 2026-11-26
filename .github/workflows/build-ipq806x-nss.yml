@@ -191,23 +191,27 @@ jobs:
             exit 1
           else
             echo "::notice::Patch diff-rac2v1k-kernel.patch applied!"
-            {
-              echo "### changes в kernel config-6.18 (${{ matrix.variant }})"
-              echo '```diff'
-              git diff target/linux/ipq806x/config-6.18
-              echo '```'
-            } >> "$GITHUB_STEP_SUMMARY"
             git diff target/linux/ipq806x/config-6.18
           fi
 
-          cp ${{ matrix.seed }} .config
-          echo 'CONFIG_CCACHE=y' >> .config
+          # Start with a minimal target-only .config so defconfig never launches menuconfig
+          cat << 'EOF' > .config
+          CONFIG_TARGET_ipq806x=y
+          CONFIG_TARGET_ipq806x_generic=y
+          CONFIG_TARGET_ipq806x_generic_DEVICE_askey_rt4230w-rev6=y
+          EOF
+          make defconfig
 
-          # 1. Unpack & patch kernel FIRST so patch output never leaks into package dump
+          # Unpack & patch Linux kernel BEFORE scanning package metadata
           make target/linux/prepare
-          # 2. Wipe any corrupted package cache and re-index all kmod-* packages cleanly
+
+          # Clean package metadata cache and re-index all kmod-* packages cleanly
           rm -rf tmp/
           ./scripts/feeds install -a
+
+          # Now apply your full seed and run defconfig
+          cp ${{ matrix.seed }} .config
+          echo 'CONFIG_CCACHE=y' >> .config
           make defconfig
 
       - name: Setup upterm session
@@ -215,11 +219,11 @@ jobs:
         uses: owenthereal/action-upterm@v2
         timeout-minutes: 300
 
-      - name: Refresh package metadata and defconfig
-        run: |
-          rm -rf tmp/
-          ./scripts/feeds install -a
-          make defconfig
+      # - name: Refresh package metadata and defconfig
+        # run: |
+          # rm -rf tmp/
+          # ./scripts/feeds install -a
+          # make defconfig
 
       # Warn about seed lines that "make defconfig" silently dropped (renamed or
       # removed packages, unmet dependencies). Checked before the long build.
