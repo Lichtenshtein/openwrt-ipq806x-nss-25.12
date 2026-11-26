@@ -168,15 +168,6 @@ jobs:
 
       - name: Update feeds
         run: |
-          cat << 'EOF' > .config
-          CONFIG_TARGET_ipq806x=y
-          CONFIG_TARGET_ipq806x_generic=y
-          CONFIG_TARGET_ipq806x_generic_DEVICE_askey_rt4230w-rev6=y
-          EOF
-          make defconfig
-          make target/linux/prepare
-
-          rm -rf tmp/
           git clone --depth 1 --branch master --no-tags --recurse-submodules https://github.com/fantastic-packages/packages.git fantastic_packages
           ./scripts/feeds update -a
           ./scripts/feeds install -a
