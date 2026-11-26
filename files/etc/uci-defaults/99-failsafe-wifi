@@ -1,0 +1,12 @@
+#!/bin/sh
+
+uci -q batch << 'EOF'
+set wireless.radio0.disabled='0'
+set wireless.default_radio0.disabled='0'
+set wireless.default_radio0.ssid='OpenWrt-Rescue'
+set wireless.default_radio0.encryption='psk2'
+set wireless.default_radio0.key='rescue12345'
+commit wireless
+
+EOF
+exit 0
