@@ -134,7 +134,6 @@ jobs:
           echo "=== Remaining Disk Space after Swap Allocation ==="
           df -h /
 
-
       - name: Install build dependencies
         run: |
           sudo apt-get update
@@ -205,6 +204,7 @@ jobs:
           # ccache is enabled for CI only, so local builds of the seed are unaffected
           echo 'CONFIG_CCACHE=y' >> .config
           make defconfig
+          yes "" | make kernel_oldconfig
 
       # - name: Setup tmate session
         # if: ${{ github.event.inputs.ssh == 'true' }}
@@ -220,7 +220,6 @@ jobs:
       # removed packages, unmet dependencies). Checked before the long build.
       - name: Check seed survived defconfig
         run: |
-          # yes "" | make kernel_oldconfig
           grep '^CONFIG_' "${{ matrix.seed }}" | sed 's/[[:space:]]*$//' > seed.lines
           : > dropped.txt
           while IFS= read -r line; do
