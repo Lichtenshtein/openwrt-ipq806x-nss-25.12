@@ -168,6 +168,15 @@ jobs:
 
       - name: Update feeds
         run: |
+          cat << 'EOF' > .config
+          CONFIG_TARGET_ipq806x=y
+          CONFIG_TARGET_ipq806x_generic=y
+          CONFIG_TARGET_ipq806x_generic_DEVICE_askey_rt4230w-rev6=y
+          EOF
+          make defconfig
+          make target/linux/prepare
+
+          rm -rf tmp/
           git clone --depth 1 --branch master --no-tags --recurse-submodules https://github.com/fantastic-packages/packages.git fantastic_packages
           ./scripts/feeds update -a
           ./scripts/feeds install -a
@@ -191,26 +200,17 @@ jobs:
             exit 1
           else
             echo "::notice::Patch diff-rac2v1k-kernel.patch applied!"
+            {
+              echo "### changes в kernel config-6.18 (${{ matrix.variant }})"
+              echo '```diff'
+              git diff target/linux/ipq806x/config-6.18
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
             git diff target/linux/ipq806x/config-6.18
           fi
 
-          # Start with a minimal target-only .config so defconfig never launches menuconfig
-          cat << 'EOF' > .config
-          CONFIG_TARGET_ipq806x=y
-          CONFIG_TARGET_ipq806x_generic=y
-          CONFIG_TARGET_ipq806x_generic_DEVICE_askey_rt4230w-rev6=y
-          EOF
-          make defconfig
-
-          # Unpack & patch Linux kernel BEFORE scanning package metadata
-          make target/linux/prepare
-
-          # Clean package metadata cache and re-index all kmod-* packages cleanly
-          rm -rf tmp/
-          ./scripts/feeds install -a
-
-          # Now apply your full seed and run defconfig
           cp ${{ matrix.seed }} .config
+          # ccache is enabled for CI only, so local builds of the seed are unaffected
           echo 'CONFIG_CCACHE=y' >> .config
           make defconfig
 
@@ -218,12 +218,6 @@ jobs:
         if: ${{ github.event.inputs.ssh == 'true' }}
         uses: owenthereal/action-upterm@v2
         timeout-minutes: 300
-
-      # - name: Refresh package metadata and defconfig
-        # run: |
-          # rm -rf tmp/
-          # ./scripts/feeds install -a
-          # make defconfig
 
       # Warn about seed lines that "make defconfig" silently dropped (renamed or
       # removed packages, unmet dependencies). Checked before the long build.
