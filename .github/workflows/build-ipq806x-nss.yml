@@ -184,6 +184,25 @@ jobs:
 
       - name: Configure
         run: |
+          patch -p1 --fuzz=3 -i "$GITHUB_WORKSPACE/diff-rac2v1k-kernel.patch"
+
+          if git diff --quiet target/linux/ipq806x/config-6.18; then
+            echo "::error::Patch diff-rac2v1k-kernel.patch NOT applied to target/linux/ipq806x/config-6.18!"
+            exit 1
+          else
+            echo "::notice::Patch diff-rac2v1k-kernel.patch applied!"
+            git diff target/linux/ipq806x/config-6.18
+          fi
+
+          # Start with a minimal target-only .config so defconfig never launches menuconfig
+          cat << 'EOF' > .config
+          CONFIG_TARGET_ipq806x=y
+          CONFIG_TARGET_ipq806x_generic=y
+          CONFIG_TARGET_ipq806x_generic_DEVICE_askey_rt4230w-rev6=y
+          EOF
+          make defconfig
+
+          # Unpack & patch Linux kernel BEFORE scanning package metadata
           make target/linux/prepare
 
           # Clean package metadata cache and re-index all kmod-* packages cleanly
