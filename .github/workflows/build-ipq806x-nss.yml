@@ -201,8 +201,13 @@ jobs:
           fi
 
           cp ${{ matrix.seed }} .config
-          # ccache is enabled for CI only, so local builds of the seed are unaffected
           echo 'CONFIG_CCACHE=y' >> .config
+
+          # 1. Unpack & patch kernel FIRST so patch output never leaks into package dump
+          make target/linux/prepare
+          # 2. Wipe any corrupted package cache and re-index all kmod-* packages cleanly
+          rm -rf tmp/
+          ./scripts/feeds install -a
           make defconfig
 
       - name: Setup upterm session
@@ -210,10 +215,11 @@ jobs:
         uses: owenthereal/action-upterm@v2
         timeout-minutes: 300
 
-      - name: Validate and sync kernel config
+      - name: Refresh package metadata and defconfig
         run: |
-          # Fail immediately if any (NEW) kernel symbol is missing
-          make target/linux/prepare V=s
+          rm -rf tmp/
+          ./scripts/feeds install -a
+          make defconfig
 
       # Warn about seed lines that "make defconfig" silently dropped (renamed or
       # removed packages, unmet dependencies). Checked before the long build.
