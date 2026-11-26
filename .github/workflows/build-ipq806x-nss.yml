@@ -212,7 +212,6 @@ jobs:
 
       - name: Validate and sync kernel config
         run: |
-          make defconfig
           # Fail immediately if any (NEW) kernel symbol is missing
           make target/linux/prepare V=s
 
