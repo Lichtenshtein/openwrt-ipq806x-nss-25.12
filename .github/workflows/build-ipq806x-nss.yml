@@ -168,19 +168,30 @@ jobs:
 
       - name: Update feeds
         run: |
+          # Clone fantastic_packages first so src-link in feeds.conf.default finds it
           git clone --depth 1 --branch master --no-tags --recurse-submodules https://github.com/fantastic-packages/packages.git fantastic_packages
+
+          # Selectively pull only the necessary packages
+          # For multiple packages, separate by spaces: `git sparse-checkout set net/hysteria net/another_package`
+
+          # Sparse-checkout missing base packages from immortalwrt/immortalwrt
+          mkdir -p package/custom
+          git clone --depth 1 --filter=blob:none --sparse https://github.com/immortalwrt/immortalwrt /tmp/immortal-src
+          git -C /tmp/immortal-src sparse-checkout set package/emortal package/utils/px5g-openssl
+          cp -r /tmp/immortal-src/package/emortal package/custom/
+          cp -r /tmp/immortal-src/package/utils/px5g-openssl package/custom/
+          rm -rf /tmp/immortal-src
+
+          # Sparse-checkout luci-theme-x-wrt from x-wrt/luci
+          git clone --depth 1 --filter=blob:none --sparse https://github.com/x-wrt/luci /tmp/xwrt-luci
+          git -C /tmp/xwrt-luci sparse-checkout set themes/luci-theme-x-wrt
+          cp -r /tmp/xwrt-luci/themes/luci-theme-x-wrt package/custom/
+          rm -rf /tmp/xwrt-luci
+
+          # Update & install all feeds (scans package/custom automatically)
           ./scripts/feeds update -a
           ./scripts/feeds install -a
           unzip -o VHTNSS.zip
-
-          # Selectively pull only the necessary packages from ImmortalWrt
-          # For multiple packages, separate by spaces: `git sparse-checkout set net/hysteria net/another_package`
-          # git clone --depth 1 --filter=blob:none --sparse https://github.com/immortalwrt/packages.git /tmp/immortal
-          # cd /tmp/immortal
-          # git sparse-checkout set net/hysteria
-          # cp -r net/hysteria $GITHUB_WORKSPACE/package/
-          # cd $GITHUB_WORKSPACE
-          # rm -rf /tmp/immortal
 
       - name: Configure
         run: |
