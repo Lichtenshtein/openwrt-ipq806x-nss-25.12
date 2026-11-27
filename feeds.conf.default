@@ -7,21 +7,31 @@ src-git telephony https://git.openwrt.org/feed/telephony.git
 # src-git oldpackages http://git.openwrt.org/packages.git
 # src-link custom /usr/src/openwrt/custom-feed
 
-# alternative and additional feeds:
+### alternative and additional feeds:
 
-src-git immortalwrt_packages https://github.com/immortalwrt/packages.git;master
-# src-git immortalwrt_luci https://github.com/immortalwrt/luci.git;master
-src-git immortalwrt_wwan https://github.com/immortalwrt/wwan-packages.git;master
+# immortalwrt feeds
 
-# src-git xwrt_packages https://github.com/x-wrt/packages.git;master
-src-git xwrt_luci https://github.com/x-wrt/luci.git;master
-src-git xwrt_video https://github.com/x-wrt/video.git;master
+src-git packages https://github.com/immortalwrt/packages.git;master
+# src-git luci https://github.com/immortalwrt/luci.git;master
+src-git wwan https://github.com/immortalwrt/wwan-packages.git;master
+
+# x-wrt feeds
+
+# src-git packages https://github.com/x-wrt/packages.git;master
+src-git luci https://github.com/x-wrt/luci.git;master
+src-git video https://github.com/x-wrt/video.git;master
 src-git xwrt https://github.com/x-wrt/com.x-wrt.git
+
+# passwall feeds
 
 src-git passwall_packages https://github.com/Openwrt-Passwall/openwrt-passwall-packages.git;main
 src-git passwall_luci https://github.com/Openwrt-Passwall/openwrt-passwall.git;main
 
+# freifunk feeds
+
 src-git freifunk_packages https://github.com/freifunk/openwrt-packages.git;master
+
+# fantastic feeds
 
 src-link fantastic_packages_packages fantastic_packages/feeds/packages
 src-link fantastic_packages_luci fantastic_packages/feeds/luci
