@@ -339,6 +339,7 @@ jobs:
           rm -rf /tmp/immortalwrt-luci
 
           # Update & install all feeds (scans package/custom automatically)
+          rm -rf feeds/* package/feeds/*
           ./scripts/feeds update -a
           ./scripts/feeds install -a
           unzip -o VHTNSS.zip
