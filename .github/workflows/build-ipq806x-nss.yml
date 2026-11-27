@@ -277,6 +277,7 @@ jobs:
             applications/luci-app-airplay2 \
             applications/luci-app-amule \
             applications/luci-app-appfilter \
+            applications/luci-app-argon-config \
             applications/luci-app-arpbind \
             applications/luci-app-autoreboot \
             applications/luci-app-bitsrunlogin-go \
@@ -361,6 +362,8 @@ jobs:
             } >> "$GITHUB_STEP_SUMMARY"
             git diff target/linux/ipq806x/config-6.18
           fi
+
+          grep -E "Package: (luci-app-autoreboot|luci-theme-argon|luci-compat|luci-lua-runtime)" tmp/.packageinfo -A 8 || true
 
           cp ${{ matrix.seed }} .config
           # ccache is enabled for CI only, so local builds of the seed are unaffected
