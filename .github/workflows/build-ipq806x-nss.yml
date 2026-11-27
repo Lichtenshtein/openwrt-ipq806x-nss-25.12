@@ -211,15 +211,14 @@ jobs:
             package/utils/pcat-manager
 
           cp -r /tmp/immortal-src/package/emortal/* \
-                /tmp/immortal-src/package/utils/* \
                 /tmp/immortal-src/package/firmware/* \
                 /tmp/immortal-src/package/kernel/* \
                 /tmp/immortal-src/package/network/services/* \
-                /tmp/immortal-src/package/network/utils/* \
-                /tmp/immortal-src/package/system/* package/custom/
+                /tmp/immortal-src/package/system/* \
+                /tmp/immortal-src/package/utils/* package/custom/
           rm -rf /tmp/immortal-src
 
-          # Sparse-checkout from x-wrt/immortalwrt
+          # Sparse-checkout from x-wrt/x-wrt
           git clone --depth 1 --filter=blob:none --sparse https://github.com/x-wrt/x-wrt.git /tmp/x-wrt-src
 
           git -C /tmp/x-wrt-src sparse-checkout set \
