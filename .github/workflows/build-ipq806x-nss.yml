@@ -368,13 +368,11 @@ jobs:
           rm -rf /tmp/immortalwrt-luci
 
           # Update & install all feeds (scans package/custom automatically)
-          rm -rf feeds/* package/feeds/*
+          rm -rf feeds/* package/feeds/* tmp/* package/fantastic_packages/feeds
           ./scripts/feeds update -a
-
-          rm -rf feeds/packages/net/{xray-core,v2ray-geodata,sing-box,chinadns-ng,dns2socks,hysteria,ipt2socks,microsocks,naiveproxy,shadowsocks-rust,shadowsocksr-libev,simple-obfs,tcping,v2ray-plugin,xray-plugin,geoview,shadow-tls,smartdns}
-          rm -rf feeds/luci/applications/luci-app-passwall
-
           ./scripts/feeds install -a
+          ./scripts/feeds install -a -f -p passwall_packages
+          ./scripts/feeds install -a -f -p passwall_luci
           unzip -o VHTNSS.zip
 
       - name: Configure
