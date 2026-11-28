@@ -169,7 +169,8 @@ jobs:
       - name: Update feeds
         run: |
           # Clone fantastic_packages first so src-link in feeds.conf.default finds it
-          git clone --depth 1 --branch master --no-tags --recurse-submodules https://github.com/fantastic-packages/packages.git fantastic_packages
+          git clone --depth 1 --branch master --single-branch --no-tags --recurse-submodules \
+            https://github.com/fantastic-packages/packages.git package/fantastic_packages
 
           # Selectively pull only the necessary packages
           # For multiple packages, separate by spaces: `git sparse-checkout set net/hysteria net/another_package`
@@ -177,7 +178,6 @@ jobs:
           # Remove core packages being replaced
           rm -rf package/system/urngd \
                  multimedia/gst1-libav \
-                 package/network/utils/iproute2 \
                  package/utils/ucode \
                  package/kernel/nat46 \
                  package/firmware/wireless-regdb \
@@ -187,28 +187,35 @@ jobs:
           mkdir -p package/custom
 
           # Sparse-checkout from immortalwrt/immortalwrt
-          git clone --depth 1 --filter=blob:none --sparse https://github.com/immortalwrt/immortalwrt.git /tmp/immortal-src
+          git clone --depth 1 --filter=blob:none --no-checkout https://github.com/immortalwrt/immortalwrt.git /tmp/immortal-src
+
+          git -C /tmp/immortal-src sparse-checkout init --no-cone
 
           git -C /tmp/immortal-src sparse-checkout set \
-            package/emortal \
-            package/firmware/armbian-firmware \
-            package/firmware/brcmfmac4366c0-firmware-k3 \
-            package/firmware/photonicat-firmware \
-            package/firmware/wireless-regdb \
-            package/kernel/aic8800 \
-            package/kernel/mwlwifi \
-            package/kernel/photonicat-pm \
-            package/kernel/qca-ssdk \
-            package/kernel/r8152 \
-            package/kernel/rtl837x-dsa \
-            package/kernel/rtl8188eu \
-            package/kernel/rtl8189es \
-            package/kernel/uwe5622 \
-            package/network/services/shellsync \
-            package/system/urngd \
-            package/utils/px5g-openssl \
-            package/utils/mhz \
-            package/utils/pcat-manager
+            package/emortal/autocore/ \
+            package/emortal/automount/ \
+            package/emortal/autosamba/ \
+            package/emortal/cpufreq/ \
+            package/emortal/default-settings/ \
+            package/firmware/armbian-firmware/ \
+            package/firmware/brcmfmac4366c0-firmware-k3/ \
+            package/firmware/photonicat-firmware/ \
+            package/firmware/wireless-regdb/ \
+            package/kernel/aic8800/ \
+            package/kernel/mwlwifi/ \
+            package/kernel/photonicat-pm/ \
+            package/kernel/qca-ssdk/ \
+            package/kernel/r8152/ \
+            package/kernel/rtl837x-dsa/ \
+            package/kernel/rtl8188eu/ \
+            package/kernel/rtl8189es/ \
+            package/kernel/uwe5622/ \
+            package/network/services/shellsync/ \
+            package/system/urngd/ \
+            package/utils/px5g-openssl/ \
+            package/utils/mhz/ \
+            package/utils/pcat-manager/
+          git -C /tmp/immortal-src checkout
 
           cp -r /tmp/immortal-src/package/emortal/* \
                 /tmp/immortal-src/package/firmware/* \
@@ -219,15 +226,30 @@ jobs:
           rm -rf /tmp/immortal-src
 
           # Sparse-checkout from x-wrt/x-wrt
-          git clone --depth 1 --filter=blob:none --sparse https://github.com/x-wrt/x-wrt.git /tmp/x-wrt-src
+          git clone --depth 1 --filter=blob:none --no-checkout https://github.com/x-wrt/x-wrt.git /tmp/x-wrt-src
+
+          git -C /tmp/x-wrt-src sparse-checkout init --no-cone
 
           git -C /tmp/x-wrt-src sparse-checkout set \
             package/firmware/znxt-zn515-mt7916-eeprom \
-            package/independent \
-            package/kernel/nat46 \
-            package/kernel/ntfs3 \
-            package/network/utils/iproute2 \
-            package/utils/ucode
+            package/independent/base-settings-xwrt-t-cpe1200k-v01/ \
+            package/independent/base-settings-xwrt-t-cpe1201k-v01/ \
+            package/independent/base-settings-xwrt-x-sdwan-1200/ \
+            package/independent/k3-custom-firmware/ \
+            package/independent/lte-modem-p2w-r619ac/ \
+            package/independent/lte-modem-xwrt-5g-cpe1801k/ \
+            package/independent/lte-modem-xwrt-csac/ \
+            package/independent/lte-modem-xwrt-fm10-ax-nand/ \
+            package/independent/poe-controller/ \
+            package/independent/pon-drivers/ \
+            package/independent/pon-userspace/ \
+            package/independent/xs2184/ \
+            package/independent/xs2184-2210/ \
+            package/kernel/nat46/ \
+            package/kernel/ntfs3/ \
+            package/network/utils/iproute2/ \
+            package/utils/ucode/
+          git -C /tmp/x-wrt-src checkout
 
           cp -r /tmp/x-wrt-src/package/firmware/* \
                 /tmp/x-wrt-src/package/independent/* \
@@ -237,26 +259,29 @@ jobs:
           rm -rf /tmp/x-wrt-src
 
           # Sparse-checkout from x-wrt/packages
-          git clone --depth 1 --filter=blob:none --sparse https://github.com/x-wrt/packages.git /tmp/x-wrt-packages
+          git clone --depth 1 --filter=blob:none --no-checkout https://github.com/x-wrt/packages.git /tmp/x-wrt-packages
+
+          git -C /tmp/x-wrt-packages sparse-checkout init --no-cone
 
           git -C /tmp/x-wrt-packages sparse-checkout set \
-            kernel/macremapper \
-            lang/node-javascript-obfuscator \
-            lang/node-yarn \
-            libs/libcups \
-            libs/libdcwproto \
-            libs/libdcwsocket \
-            libs/pcre \
-            multimedia/gst1-libav \
-            multimedia/onvif-simple-server \
-            net/cgi-io \
-            net/dcstad \
-            net/dcwapd \
-            net/gnunet \
-            net/mrmctl \
-            net/redsocks \
-            net/xl2tpd \
-            utils/tini
+            kernel/macremapper/ \
+            lang/node-javascript-obfuscator/ \
+            lang/node-yarn/ \
+            libs/libcups/ \
+            libs/libdcwproto/ \
+            libs/libdcwsocket/ \
+            libs/pcre/ \
+            multimedia/gst1-libav/ \
+            multimedia/onvif-simple-server/ \
+            net/cgi-io/ \
+            net/dcstad/ \
+            net/dcwapd/ \
+            net/gnunet/ \
+            net/mrmctl/ \
+            net/redsocks/ \
+            net/xl2tpd/ \
+            utils/tini/
+          git -C /tmp/x-wrt-packages checkout
 
           cp -r /tmp/x-wrt-packages/kernel/* \
                 /tmp/x-wrt-packages/lang/* \
@@ -267,72 +292,75 @@ jobs:
           rm -rf /tmp/x-wrt-packages
 
           # Sparse-checkout from immortalwrt/luci
-          git clone --depth 1 --filter=blob:none --sparse https://github.com/immortalwrt/luci.git /tmp/immortalwrt-luci
+          git clone --depth 1 --filter=blob:none --no-checkout https://github.com/immortalwrt/luci.git /tmp/immortalwrt-luci
+
+          git -C /tmp/immortalwrt-luci sparse-checkout init --no-cone
 
           git -C /tmp/immortalwrt-luci sparse-checkout set \
-            themes/luci-theme-argon \
-            protocols/luci-proto-minieap \
-            applications/luci-app-3cat \
-            applications/luci-app-3ginfo-lite \
-            applications/luci-app-airplay2 \
-            applications/luci-app-amule \
-            applications/luci-app-appfilter \
-            applications/luci-app-argon-config \
-            applications/luci-app-arpbind \
-            applications/luci-app-autoreboot \
-            applications/luci-app-bitsrunlogin-go \
-            applications/luci-app-cd8021x \
-            applications/luci-app-cifs-mount \
-            applications/luci-app-cpufreq \
-            applications/luci-app-cpulimit \
-            applications/luci-app-dae \
-            applications/luci-app-daed \
-            applications/luci-app-ddns-go \
-            applications/luci-app-diskman \
-            applications/luci-app-dufs \
-            applications/luci-app-eqos \
-            applications/luci-app-fancontrol \
-            applications/luci-app-filebrowser-go \
-            applications/luci-app-gost \
-            applications/luci-app-homeproxy \
-            applications/luci-app-ipsec-vpnd \
-            applications/luci-app-k3screenctrl \
-            applications/luci-app-microsocks \
-            applications/luci-app-modemband \
-            applications/luci-app-msd_lite \
-            applications/luci-app-music-remote-center \
-            applications/luci-app-n2n \
-            applications/luci-app-netdata \
-            applications/luci-app-nfs \
-            applications/luci-app-ngrokc \
-            applications/luci-app-njitclient \
-            applications/luci-app-nps \
-            applications/luci-app-oled \
-            applications/luci-app-openvpn-server \
-            applications/luci-app-oscam \
-            applications/luci-app-pppoe-relay \
-            applications/luci-app-pppoe-server \
-            applications/luci-app-ps3netsrv \
-            applications/luci-app-qbittorrent \
-            applications/luci-app-ramfree \
-            applications/luci-app-rclone \
-            applications/luci-app-rtp2httpd \
-            applications/luci-app-scutclient \
-            applications/luci-app-sms-tool-js \
-            applications/luci-app-softethervpn \
-            applications/luci-app-spotifyd \
-            applications/luci-app-syncdial \
-            applications/luci-app-syncthing \
-            applications/luci-app-sysuh3c \
-            applications/luci-app-timewol \
-            applications/luci-app-ua2f \
-            applications/luci-app-unblockneteasemusic \
-            applications/luci-app-usb-printer \
-            applications/luci-app-vlmcsd \
-            applications/luci-app-vsftpd \
-            applications/luci-app-wechatpush \
-            applications/luci-app-xlnetacc \
-            applications/luci-app-zerotier
+            themes/luci-theme-argon/ \
+            protocols/luci-proto-minieap/ \
+            applications/luci-app-3cat/ \
+            applications/luci-app-3ginfo-lite/ \
+            applications/luci-app-airplay2/ \
+            applications/luci-app-amule/ \
+            applications/luci-app-appfilter/ \
+            applications/luci-app-argon-config/ \
+            applications/luci-app-arpbind/ \
+            applications/luci-app-autoreboot/ \
+            applications/luci-app-bitsrunlogin-go/ \
+            applications/luci-app-cd8021x/ \
+            applications/luci-app-cifs-mount/ \
+            applications/luci-app-cpufreq/ \
+            applications/luci-app-cpulimit/ \
+            applications/luci-app-dae/ \
+            applications/luci-app-daed/ \
+            applications/luci-app-ddns-go/ \
+            applications/luci-app-diskman/ \
+            applications/luci-app-dufs/ \
+            applications/luci-app-eqos/ \
+            applications/luci-app-fancontrol/ \
+            applications/luci-app-filebrowser-go/ \
+            applications/luci-app-gost/ \
+            applications/luci-app-homeproxy/ \
+            applications/luci-app-ipsec-vpnd/ \
+            applications/luci-app-k3screenctrl/ \
+            applications/luci-app-microsocks/ \
+            applications/luci-app-modemband/ \
+            applications/luci-app-msd_lite/ \
+            applications/luci-app-music-remote-center/ \
+            applications/luci-app-n2n/ \
+            applications/luci-app-netdata/ \
+            applications/luci-app-nfs/ \
+            applications/luci-app-ngrokc/ \
+            applications/luci-app-njitclient/ \
+            applications/luci-app-nps/ \
+            applications/luci-app-oled/ \
+            applications/luci-app-openvpn-server/ \
+            applications/luci-app-oscam/ \
+            applications/luci-app-pppoe-relay/ \
+            applications/luci-app-pppoe-server/ \
+            applications/luci-app-ps3netsrv/ \
+            applications/luci-app-qbittorrent/ \
+            applications/luci-app-ramfree/ \
+            applications/luci-app-rclone/ \
+            applications/luci-app-rtp2httpd/ \
+            applications/luci-app-scutclient/ \
+            applications/luci-app-sms-tool-js/ \
+            applications/luci-app-softethervpn/ \
+            applications/luci-app-spotifyd/ \
+            applications/luci-app-syncdial/ \
+            applications/luci-app-syncthing/ \
+            applications/luci-app-sysuh3c/ \
+            applications/luci-app-timewol/ \
+            applications/luci-app-ua2f/ \
+            applications/luci-app-unblockneteasemusic/ \
+            applications/luci-app-usb-printer/ \
+            applications/luci-app-vlmcsd/ \
+            applications/luci-app-vsftpd/ \
+            applications/luci-app-wechatpush/ \
+            applications/luci-app-xlnetacc/ \
+            applications/luci-app-zerotier/
+          git -C /tmp/immortalwrt-luci checkout
 
           cp -r /tmp/immortalwrt-luci/themes/* \
                 /tmp/immortalwrt-luci/protocols/* \
@@ -342,6 +370,10 @@ jobs:
           # Update & install all feeds (scans package/custom automatically)
           rm -rf feeds/* package/feeds/*
           ./scripts/feeds update -a
+
+          rm -rf feeds/packages/net/{xray-core,v2ray-geodata,sing-box,chinadns-ng,dns2socks,hysteria,ipt2socks,microsocks,naiveproxy,shadowsocks-rust,shadowsocksr-libev,simple-obfs,tcping,v2ray-plugin,xray-plugin,geoview,shadow-tls,smartdns}
+          rm -rf feeds/luci/applications/luci-app-passwall
+
           ./scripts/feeds install -a
           unzip -o VHTNSS.zip
 

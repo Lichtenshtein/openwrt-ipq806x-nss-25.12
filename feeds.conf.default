@@ -31,8 +31,3 @@ src-git passwall_luci https://github.com/Openwrt-Passwall/openwrt-passwall.git;m
 
 src-git freifunk_packages https://github.com/freifunk/openwrt-packages.git;master
 
-# fantastic feeds
-
-src-link fantastic_packages_packages fantastic_packages/feeds/packages
-src-link fantastic_packages_luci fantastic_packages/feeds/luci
-src-link fantastic_packages_special fantastic_packages/feeds/special
